@@ -1,6 +1,7 @@
 package com.jecvay.ecosuites.espaymoney;
 
 import com.google.inject.Inject;
+import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.game.state.*;
@@ -38,6 +39,7 @@ public class ESPayMoney {
         * During this state, the plugin should finish any work needed in order to be functional.
         * Global event handlers should get registered in this stage.
         * */
+        game.getEventManager().registerListeners(this, new MiningListener(this));
     }
 
     @Listener
@@ -65,5 +67,9 @@ public class ESPayMoney {
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
         logger.info("ESPayMoney starting");
+    }
+
+    public Logger getLogger() {
+        return this.logger;
     }
 }
