@@ -66,7 +66,7 @@ public class ESPayMoney {
         if (localeStr == null || localeStr.isEmpty()) {
             localeStr = "en_US";
         }
-        Locale locale = new Locale(localeStr);
+        Locale locale = Locale.forLanguageTag(localeStr);
         I18N.setLocale(locale);
     }
 
