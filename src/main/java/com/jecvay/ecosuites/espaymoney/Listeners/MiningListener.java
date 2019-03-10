@@ -4,6 +4,7 @@ import com.jecvay.ecosuites.espaymoney.ESPayMoney;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 
@@ -17,7 +18,7 @@ public class MiningListener {
         logger = esp.getLogger();
     }
 
-    @Listener
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event) {
         // skip the events which are not emitted by player.
         Cause cause = event.getCause();
@@ -30,6 +31,7 @@ public class MiningListener {
             boolean isPresent = creator.isPresent();
             if (isPresent) {
                 logger.info("No");
+                event.setCancelled(true);
             } else {
                 logger.info("Yes");
             }

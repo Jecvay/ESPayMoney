@@ -2,12 +2,9 @@ package com.jecvay.ecosuites.espaymoney;
 
 import com.google.inject.Inject;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.event.Listener;
@@ -33,13 +30,13 @@ public class ESPayMoney {
     private Game game;
 
     @Inject
-    @DefaultConfig(sharedRoot = false)
+    @ConfigDir(sharedRoot = false)
     private Path configDir;
 
     @Inject
     private PluginContainer pluginContainer;
 
-    private ConfigManager configManager;
+    private MainConfig mainConfig;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -48,7 +45,7 @@ public class ESPayMoney {
         * Access to a default logger instance and access to information
         * regarding preferred configuration file locations is available.
         * */
-        configManager = new ConfigManager(this, configDir);
+        mainConfig = new MainConfig(this, configDir);
     }
 
     @Listener
@@ -83,7 +80,7 @@ public class ESPayMoney {
     @Listener
     public void onServerReload(GameReloadEvent event) {
         logger.info("ESPayMoney reloading");
-        configManager = new ConfigManager(this, configDir);
+        mainConfig.reload();
     }
 
     @Listener
