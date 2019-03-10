@@ -1,7 +1,6 @@
-package com.jecvay.ecosuites.espaymoney.Listeners;
+package com.jecvay.ecosuites.espaymoney;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;

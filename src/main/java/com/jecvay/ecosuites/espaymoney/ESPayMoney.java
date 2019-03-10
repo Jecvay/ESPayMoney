@@ -1,14 +1,15 @@
 package com.jecvay.ecosuites.espaymoney;
 
 import com.google.inject.Inject;
-import com.jecvay.ecosuites.espaymoney.Listeners.I18N;
+import com.jecvay.ecosuites.espaymoney.Listeners.EconomyListener;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
+import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.*;
-import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import org.apache.commons.lang3.LocaleUtils;
 
 @Plugin(
         id = "espaymoney",
@@ -42,6 +42,7 @@ public class ESPayMoney {
     private PluginContainer pluginContainer;
 
     private MainConfig mainConfig;
+    private EconomyManager economyManager;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -77,7 +78,13 @@ public class ESPayMoney {
         * During this state, the plugin should finish any work needed in order to be functional.
         * Global event handlers should get registered in this stage.
         * */
-        if (mainConfig.getNode("modules", "payMining", "enabled").getBoolean()) {
+
+        // init economyManager
+        economyManager = new EconomyManager(this);
+        game.getEventManager().registerListeners(this, new EconomyListener(this, economyManager));
+
+        // init mainConfig
+        if (mainConfig.getNode("modules", "pay_mining", "enabled").getBoolean()) {
             game.getEventManager().registerListeners(this, new MiningListener(this));
             logger.info(I18N.get("mining.enabled"));
         }
@@ -118,6 +125,14 @@ public class ESPayMoney {
 
     public Logger getLogger() {
         return this.logger;
+    }
+
+    public MainConfig getMainConfig() {
+        return this.mainConfig;
+    }
+
+    public EconomyManager getEconomyManager() {
+        return economyManager;
     }
 
     public PluginContainer getContainer() {

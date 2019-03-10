@@ -1,8 +1,10 @@
 package com.jecvay.ecosuites.espaymoney;
 
+import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -18,6 +20,8 @@ public class MainConfig {
     private ESPayMoney esp;
     private Logger logger;
     private CommentedConfigurationNode node = null;
+
+    private CommentedConfigurationNode miningNode= null;
 
     MainConfig(ESPayMoney esp, Path configDir) {
         Path path = configDir.resolve(mainConfName);
@@ -40,9 +44,27 @@ public class MainConfig {
     public void reload() {
         try {
             this.node = this.configLoader.load();
+            miningNode = this.node.getNode("pay_mining");
         } catch (IOException e) {
             e.printStackTrace();
             logger.warn("reload failed: {}", mainConfName);
+        }
+    }
+
+    public double getPayOtherBlock() {
+        return miningNode.getNode("other_blocks").getDouble();
+    }
+
+    public double getPayBlock(final String blockId) {
+        CommentedConfigurationNode priceNode = miningNode.getNode("blocks", blockId);
+        if (priceNode.getValue() == null) {
+            String blockCommonId = blockId.split("\\[", 2)[0];
+            priceNode = miningNode.getNode("blocks", blockCommonId);
+        }
+        if (priceNode.getValue() == null) {
+            return getPayOtherBlock();
+        } else {
+            return priceNode.getDouble();
         }
     }
 
