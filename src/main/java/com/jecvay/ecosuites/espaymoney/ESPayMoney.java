@@ -12,6 +12,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -49,6 +51,13 @@ public class ESPayMoney {
         * */
 
         // init config
+        if (!Files.exists(configDir)) {
+            try {
+                Files.createDirectories(configDir);
+            } catch (IOException e) {
+                logger.error("Failed to create main config directory: {}", e);
+            }
+        }
         mainConfig = new MainConfig(this, configDir);
 
         // init i18n service

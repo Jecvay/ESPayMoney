@@ -21,7 +21,7 @@ public class MainConfig {
     private CommentedConfigurationNode node = null;
 
     MainConfig(ESPayMoney esp, Path configDir) {
-        Path path = Paths.get(configDir.toString(), mainConfName);
+        Path path = configDir.resolve(mainConfName);
         this.esp = esp;
         this.logger = esp.getLogger();
         this.configLoader = HoconConfigurationLoader.builder().setPath(path).build();
