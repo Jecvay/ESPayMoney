@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import org.apache.commons.lang3.LocaleUtils;
 
 @Plugin(
         id = "espaymoney",
@@ -66,7 +67,7 @@ public class ESPayMoney {
         if (localeStr == null || localeStr.isEmpty()) {
             localeStr = "en_US";
         }
-        Locale locale = Locale.forLanguageTag(localeStr);
+        Locale locale = LocaleUtils.toLocale(localeStr);
         I18N.setLocale(locale);
     }
 
