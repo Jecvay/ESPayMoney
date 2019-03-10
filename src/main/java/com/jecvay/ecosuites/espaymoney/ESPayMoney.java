@@ -1,6 +1,7 @@
 package com.jecvay.ecosuites.espaymoney;
 
 import com.google.inject.Inject;
+import com.jecvay.ecosuites.espaymoney.Listeners.I18N;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -12,6 +13,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Path;
+import java.util.Locale;
 
 @Plugin(
         id = "espaymoney",
@@ -45,7 +47,18 @@ public class ESPayMoney {
         * Access to a default logger instance and access to information
         * regarding preferred configuration file locations is available.
         * */
+
+        // init config
         mainConfig = new MainConfig(this, configDir);
+
+        // init i18n service
+        I18N.setLogger(logger);
+        String localeStr = mainConfig.getNode("lang").getString();
+        if (localeStr == null || localeStr.isEmpty()) {
+            localeStr = "en_US";
+        }
+        Locale locale = new Locale(localeStr);
+        I18N.setLocale(locale);
     }
 
     @Listener
@@ -54,7 +67,10 @@ public class ESPayMoney {
         * During this state, the plugin should finish any work needed in order to be functional.
         * Global event handlers should get registered in this stage.
         * */
-        game.getEventManager().registerListeners(this, new MiningListener(this));
+        if (mainConfig.getNode("modules", "payMining", "enabled").getBoolean()) {
+            game.getEventManager().registerListeners(this, new MiningListener(this));
+            logger.info(I18N.get("mining.enabled"));
+        }
     }
 
     @Listener
@@ -74,12 +90,12 @@ public class ESPayMoney {
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
-        logger.info("ESPayMoney starting");
+        logger.info(I18N.get("plugin.starting"));
     }
 
     @Listener
     public void onServerReload(GameReloadEvent event) {
-        logger.info("ESPayMoney reloading");
+        logger.info(I18N.get("plugin.reload"));
         mainConfig.reload();
     }
 
