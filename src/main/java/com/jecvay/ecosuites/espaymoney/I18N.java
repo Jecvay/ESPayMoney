@@ -4,11 +4,16 @@ import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
@@ -17,11 +22,14 @@ import java.util.ResourceBundle;
 public class I18N {
     private static Logger logger = null;
     private static I18N ins = null;
+    private static ESPayMoney esp;
+    // private static String assetsPath = "assets.espaymoney";
+    private static String assetsName = "i18n";
+
     private ResourceBundle rb;
 
     private I18N(Locale locale) {
-        String resource = "assets.espaymoney.i18n";
-        this.rb = ResourceBundle.getBundle(resource, locale, new UTF8Control());
+        this.rb = getCustomBundle(assetsName, locale);
     }
 
     static public I18N getInstance() {
@@ -31,6 +39,37 @@ public class I18N {
         return ins;
     }
 
+    private ResourceBundle getCustomBundle(String name, Locale locale) {
+        Path configDir = esp.getConfigDir();
+        Path langDir = configDir.resolve("lang");
+        if (!Files.exists(langDir)) {
+            try {
+                Files.createDirectories(langDir);
+            } catch (IOException e) {
+                logger.error("Failed to create langDir directory: {}", e);
+            }
+        }
+        String fileName = String.join("_", name, locale.toString()) + ".properties";
+        Path filePath = langDir.resolve(fileName);
+        if (!Files.exists(filePath)) {
+            try {
+                esp.getContainer().getAsset(fileName).get().copyToFile(filePath);
+            } catch (IOException e) {
+                logger.error("Failed to copy language file {}", e);
+            }
+        }
+
+        File file = new File(langDir.toString());
+        URL[] urls = new URL[0];
+        try {
+            urls = new URL[]{file.toURI().toURL()};
+        } catch (MalformedURLException e) {
+            logger.error("Failed to create resource loader {}", e);
+        }
+        ClassLoader loader = new URLClassLoader(urls);
+        return ResourceBundle.getBundle(name, locale, loader, new UTF8Control());
+    }
+
     /////////////////
 
     static public void setLocale(Locale locale) {
@@ -38,18 +77,30 @@ public class I18N {
         ins = new I18N(locale);
     }
 
+    static public void setPlugin(ESPayMoney esp) {
+        I18N.esp = esp;
+    }
+
     public static void setLogger(Logger logger) {
         I18N.logger = logger;
     }
 
     public static String getString(String key, Object... args) {
-        String value = getInstance().rb.getString(key);
-        return MessageFormat.format(value, args);
+        if (getInstance().rb.containsKey(key)) {
+            String value = getInstance().rb.getString(key);
+            return MessageFormat.format(value, args);
+        } else {
+            return key;
+        }
     }
 
     public static Text getText(String key, Object... args) {
         String filledValue = getString(key, args);
-        return TextSerializers.FORMATTING_CODE.deserialize(filledValue);
+        if (filledValue.equals(key)) {
+            return Text.of(key);
+        } else {
+            return TextSerializers.FORMATTING_CODE.deserialize(filledValue);
+        }
     }
 }
 

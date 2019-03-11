@@ -64,6 +64,7 @@ public class ESPayMoney {
 
         // init i18n service
         I18N.setLogger(logger);
+        I18N.setPlugin(this);
         String localeStr = mainConfig.getNode("lang").getString();
         if (localeStr == null || localeStr.isEmpty()) {
             localeStr = "en_US";
@@ -143,5 +144,9 @@ public class ESPayMoney {
 
     public PluginContainer getContainer() {
         return pluginContainer;
+    }
+
+    public Path getConfigDir() {
+        return configDir;
     }
 }
