@@ -7,10 +7,29 @@
 * There will be a tip on the `Action Bar` every time when player earn `remind_money`
 * You can custom the content of tips in `assets/i18n.properties`
 
+### Commands
+- `/esp reload` reload configuration and RE register listeners. (permission=`espaymoney.reload`)
+
+
+### Permissions
+
+##### admin
+- `espaymoney.reload`
+
+##### player
+- `<None>`
+
+
+### Modify messages' translation
+1. Edit config.conf, set `lang=en_US` or `lang=zh_CN`
+1. After server started, in your plugin's config folder there will be a lang folder which contain the i18n[_zh_CN].properties file.
+1. Edit this file and restart your server.
+
+
 ### Configuration
 
 ```
-lang=zh_CN
+lang=en_US
 
 modules {
     pay_mining {
