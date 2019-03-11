@@ -36,7 +36,7 @@ public class EconomyManager {
         if (serviceOptional.isPresent()) {
             setEconomyService(serviceOptional.get());
         } else {
-            esp.getLogger().error(I18N.get("plugin.no_economy"));
+            esp.getLogger().error(I18N.getString("plugin.no_economy"));
         }
     }
 

@@ -14,7 +14,7 @@ public class EconomyListener {
     public EconomyListener(ESPayMoney esp, EconomyManager economyManager) {
         this.esp = esp;
         this.economyManager = economyManager;
-        esp.getLogger().info(I18N.get("eco.listener.init"));
+        esp.getLogger().info(I18N.getString("eco.listener.init"));
     }
 
     @Listener

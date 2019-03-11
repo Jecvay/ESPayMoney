@@ -72,6 +72,18 @@ public class ESPayMoney {
         I18N.setLocale(locale);
     }
 
+    private void registerCustomListeners() {
+        // init economyManager
+        economyManager = new EconomyManager(this);
+        game.getEventManager().registerListeners(this, new EconomyListener(this, economyManager));
+
+        // init miningListener
+        if (mainConfig.getNode("modules", "pay_mining", "enabled").getBoolean()) {
+            game.getEventManager().registerListeners(this, new MiningListener(this));
+            logger.info(I18N.getString("mining.enabled"));
+        }
+    }
+
     @Listener
     public void onInit(GameInitializationEvent event) {
         /*
@@ -79,15 +91,7 @@ public class ESPayMoney {
         * Global event handlers should get registered in this stage.
         * */
 
-        // init economyManager
-        economyManager = new EconomyManager(this);
-        game.getEventManager().registerListeners(this, new EconomyListener(this, economyManager));
-
-        // init mainConfig
-        if (mainConfig.getNode("modules", "pay_mining", "enabled").getBoolean()) {
-            game.getEventManager().registerListeners(this, new MiningListener(this));
-            logger.info(I18N.get("mining.enabled"));
-        }
+        registerCustomListeners();
     }
 
     @Listener
@@ -107,13 +111,15 @@ public class ESPayMoney {
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
-        logger.info(I18N.get("plugin.starting"));
+        logger.info(I18N.getString("plugin.starting"));
     }
 
     @Listener
     public void onServerReload(GameReloadEvent event) {
-        logger.info(I18N.get("plugin.reload"));
+        logger.info(I18N.getString("plugin.reload"));
         mainConfig.reload();
+        game.getEventManager().unregisterListeners(this);
+        registerCustomListeners();
     }
 
     @Listener

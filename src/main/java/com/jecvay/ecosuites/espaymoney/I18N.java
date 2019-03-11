@@ -1,12 +1,15 @@
 package com.jecvay.ecosuites.espaymoney;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -39,8 +42,14 @@ public class I18N {
         I18N.logger = logger;
     }
 
-    public static String get(String key) {
-        return getInstance().rb.getString(key);
+    public static String getString(String key, Object... args) {
+        String value = getInstance().rb.getString(key);
+        return MessageFormat.format(value, args);
+    }
+
+    public static Text getText(String key, Object... args) {
+        String filledValue = getString(key, args);
+        return TextSerializers.FORMATTING_CODE.deserialize(filledValue);
     }
 }
 

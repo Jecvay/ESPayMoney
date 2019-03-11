@@ -51,6 +51,18 @@ public class MainConfig {
         }
     }
 
+    private void upgradeConf() {
+        // merge config.conf from newer jar/assets.
+    }
+
+    public CommentedConfigurationNode getNode(@Nonnull final Object... keys) {
+        return this.node.getNode(keys);
+    }
+
+    public double getMineRemindMoney() {
+        return miningNode.getNode("remind_money").getDouble();
+    }
+
     public double getPayOtherBlock() {
         return miningNode.getNode("other_blocks").getDouble();
     }
@@ -66,14 +78,6 @@ public class MainConfig {
         } else {
             return priceNode.getDouble();
         }
-    }
-
-    private void upgradeConf() {
-        // merge config.conf from newer jar/assets.
-    }
-
-    public CommentedConfigurationNode getNode(@Nonnull final Object... keys) {
-        return this.node.getNode(keys);
     }
 
 }
