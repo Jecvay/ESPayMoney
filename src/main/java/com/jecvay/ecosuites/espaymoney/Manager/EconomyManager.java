@@ -1,5 +1,7 @@
-package com.jecvay.ecosuites.espaymoney;
+package com.jecvay.ecosuites.espaymoney.Manager;
 
+import com.jecvay.ecosuites.espaymoney.ESPayMoney;
+import com.jecvay.ecosuites.espaymoney.I18N;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
@@ -53,7 +55,7 @@ public class EconomyManager {
         Optional<UniqueAccount> uOpt = economyService.getOrCreateAccount(player.getUniqueId());
         if (uOpt.isPresent()) {
             TransactionResult result = uOpt.get().withdraw(
-                economyService.getDefaultCurrency(), BigDecimal.valueOf(money),
+                    defaultCurrency, BigDecimal.valueOf(money),
                 Cause.of(evenContext, esp.getContainer())
             );
             return result.getResult();
@@ -65,7 +67,7 @@ public class EconomyManager {
         Optional<UniqueAccount> uOpt = economyService.getOrCreateAccount(player.getUniqueId());
         if (uOpt.isPresent()) {
             TransactionResult result = uOpt.get().deposit(
-                    economyService.getDefaultCurrency(), BigDecimal.valueOf(money),
+                    defaultCurrency, BigDecimal.valueOf(money),
                     Cause.of(evenContext, esp.getContainer())
             );
             return result.getResult();

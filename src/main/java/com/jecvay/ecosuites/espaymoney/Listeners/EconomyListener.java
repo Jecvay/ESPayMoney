@@ -1,7 +1,7 @@
 package com.jecvay.ecosuites.espaymoney.Listeners;
 
 import com.jecvay.ecosuites.espaymoney.ESPayMoney;
-import com.jecvay.ecosuites.espaymoney.EconomyManager;
+import com.jecvay.ecosuites.espaymoney.Manager.EconomyManager;
 import com.jecvay.ecosuites.espaymoney.I18N;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;

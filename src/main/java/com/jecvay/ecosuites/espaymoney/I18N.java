@@ -49,7 +49,12 @@ public class I18N {
                 logger.error("Failed to create langDir directory: {}", e);
             }
         }
-        String fileName = String.join("_", name, locale.toString()) + ".properties";
+        String fileName;
+        if (locale.toString().equals("en_US")) {
+            fileName = name + ".properties";
+        } else {
+            fileName = String.join("_", name, locale.toString()) + ".properties";
+        }
         Path filePath = langDir.resolve(fileName);
         if (!Files.exists(filePath)) {
             try {

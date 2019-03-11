@@ -3,9 +3,13 @@ package com.jecvay.ecosuites.espaymoney;
 import com.google.inject.Inject;
 import com.jecvay.ecosuites.espaymoney.Listeners.EconomyListener;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
+import com.jecvay.ecosuites.espaymoney.Manager.ESPCommandManager;
+import com.jecvay.ecosuites.espaymoney.Manager.EconomyManager;
 import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
@@ -108,6 +112,8 @@ public class ESPayMoney {
         /*
         * The server instance exists, and worlds are loaded. Command registration is handled during this state.
         * */
+        CommandManager commandManager = Sponge.getCommandManager();
+        commandManager.register(this, new ESPCommandManager(this).getSpec(), "espaymoney", "esp");
     }
 
     @Listener
@@ -117,6 +123,10 @@ public class ESPayMoney {
 
     @Listener
     public void onServerReload(GameReloadEvent event) {
+        reloadPlugin();
+    }
+
+    public void reloadPlugin() {
         logger.info(I18N.getString("plugin.reload"));
         mainConfig.reload();
         game.getEventManager().unregisterListeners(this);
