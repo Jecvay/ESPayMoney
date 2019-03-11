@@ -4,6 +4,7 @@ import com.jecvay.ecosuites.espaymoney.ESPayMoney;
 import com.jecvay.ecosuites.espaymoney.I18N;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -70,6 +71,9 @@ public class MiningListener {
 
     @Listener(order = Order.EARLY, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event, @Root Player player) {
+        if (player.gameMode().get() == GameModes.CREATIVE) {
+            return;
+        }
         event.getTransactions().forEach(trans->{
             if (!trans.isValid()) {
                 return;
