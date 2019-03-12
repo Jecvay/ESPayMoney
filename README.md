@@ -1,8 +1,9 @@
 # ESPayMoney
 
-### Sponge plugin, pay money when mining.
-* Pay money to player who break a block (when mining) which `price > 0`.
-* If player have not enough money, then he cannot break any blocks which `price < 0`.
+### Sponge plugin, pay money when mining, or killing entities.
+* Pay money to player who \[break a block/kill an entity\] which `price > 0`.
+* If player have not enough money, then he cannot \[break the block/kill the entity\] which `price < 0`.
+* You cannot earn from break the block which is placed by players, also cannot earn from kill the entity made by players.
 * You can set different price to different block type.
 * There will be a tip on the `Action Bar` every time when player earn `remind_money`
 * You can custom the content of tips in `assets/i18n.properties`
@@ -29,12 +30,12 @@
 ### Configuration
 
 ```
+# en_US, zh_CN
 lang=en_US
 
 modules {
-    pay_mining {
-        enabled=true
-    }
+    pay_mining = true,
+    pay_killing = true,
 }
 
 pay_mining {
@@ -46,6 +47,15 @@ pay_mining {
         "minecraft:wool" : -1,
         "minecraft:stone" : 1,
         "minecraft:stone[variant=granite]" : 2,
+    }
+}
+
+pay_killing {
+    remind_money: 500,
+    other_entity: 1,
+    entities {
+        "minecraft:chicken" : -20,
+        "minecraft:cow": 20,
     }
 }
 ```
