@@ -2,6 +2,7 @@ package com.jecvay.ecosuites.espaymoney;
 
 import com.google.inject.Inject;
 import com.jecvay.ecosuites.espaymoney.Listeners.EconomyListener;
+import com.jecvay.ecosuites.espaymoney.Listeners.EntityListener;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
 import com.jecvay.ecosuites.espaymoney.Manager.ESPCommandManager;
 import com.jecvay.ecosuites.espaymoney.Manager.EconomyManager;
@@ -83,9 +84,15 @@ public class ESPayMoney {
         game.getEventManager().registerListeners(this, new EconomyListener(this, economyManager));
 
         // init miningListener
-        if (mainConfig.getNode("modules", "pay_mining", "enabled").getBoolean()) {
+        if (mainConfig.getNode("modules", "pay_mining").getBoolean()) {
             game.getEventManager().registerListeners(this, new MiningListener(this));
             logger.info(I18N.getString("mining.enabled"));
+        }
+
+        // init entityListener
+        if (mainConfig.getNode("modules", "pay_killing").getBoolean()) {
+            game.getEventManager().registerListeners(this, new EntityListener(this));
+            logger.info(I18N.getString("kill.enabled"));
         }
     }
 
@@ -129,7 +136,8 @@ public class ESPayMoney {
     public void reloadPlugin() {
         logger.info(I18N.getString("plugin.reload"));
         mainConfig.reload();
-        game.getEventManager().unregisterListeners(this);
+        // game.getEventManager().unregisterListeners(this);
+        game.getEventManager().unregisterPluginListeners(this);
         registerCustomListeners();
     }
 

@@ -21,7 +21,8 @@ public class MainConfig {
     private Logger logger;
     private CommentedConfigurationNode node = null;
 
-    private CommentedConfigurationNode miningNode= null;
+    private CommentedConfigurationNode miningNode = null;
+    private CommentedConfigurationNode killNode = null;
 
     MainConfig(ESPayMoney esp, Path configDir) {
         Path path = configDir.resolve(mainConfName);
@@ -45,6 +46,7 @@ public class MainConfig {
         try {
             this.node = this.configLoader.load();
             miningNode = this.node.getNode("pay_mining");
+            killNode = this.node.getNode("pay_killing");
         } catch (IOException e) {
             e.printStackTrace();
             logger.warn("reload failed: {}", mainConfName);
@@ -63,6 +65,10 @@ public class MainConfig {
         return miningNode.getNode("remind_money").getDouble();
     }
 
+    public double getKillRemindMoney() {
+        return killNode.getNode("remind_money").getDouble();
+    }
+
     public double getPayOtherBlock() {
         return miningNode.getNode("other_blocks").getDouble();
     }
@@ -75,6 +81,23 @@ public class MainConfig {
         }
         if (priceNode.getValue() == null) {
             return getPayOtherBlock();
+        } else {
+            return priceNode.getDouble();
+        }
+    }
+
+    public double getPayOtherEntity() {
+        return killNode.getNode("other_entity").getDouble();
+    }
+
+    public double getPayEntity(final String entityId) {
+        CommentedConfigurationNode priceNode = killNode.getNode("entities", entityId);
+        if (priceNode.getValue() == null) {
+            String entityCommonId = entityId.split("\\[", 2)[0];
+            priceNode = killNode.getNode("entities", entityCommonId);
+        }
+        if (priceNode.getValue() == null) {
+            return getPayOtherEntity();
         } else {
             return priceNode.getDouble();
         }

@@ -1,5 +1,6 @@
 package com.jecvay.ecosuites.espaymoney;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -34,7 +35,7 @@ public class I18N {
 
     static public I18N getInstance() {
         if (ins == null) {
-            ins = new I18N(Locale.getDefault());
+            ins = new I18N(LocaleUtils.toLocale("en_US"));
         }
         return ins;
     }
