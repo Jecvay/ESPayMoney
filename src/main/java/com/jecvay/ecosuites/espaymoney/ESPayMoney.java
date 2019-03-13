@@ -7,6 +7,7 @@ import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
 import com.jecvay.ecosuites.espaymoney.Manager.ESPCommandManager;
 import com.jecvay.ecosuites.espaymoney.Manager.EconomyManager;
 import org.apache.commons.lang3.LocaleUtils;
+import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -45,6 +46,9 @@ public class ESPayMoney {
 
     @Inject
     private PluginContainer pluginContainer;
+
+    @Inject
+    private Metrics2 metrics;
 
     private MainConfig mainConfig;
     private EconomyManager economyManager;
