@@ -1,5 +1,6 @@
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
+    id 'java'
 }
 
 group = pluginGroup
@@ -7,6 +8,7 @@ version = pluginVersion
 
 dependencies {
     compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    testCompile 'junit:junit:4.12'
 }
 
 sponge.plugin.id = pluginId

@@ -1,10 +1,8 @@
 package com.jecvay.ecosuites.espaymoney;
 
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
