@@ -26,7 +26,7 @@ public class PriceRangeTest {
 
     @Test
     public void random() {
-        PriceRange pr = new PriceRange("-10 : 20");
+        PriceRange pr = new PriceRange("-10 ~ 20");
         for (int i = 0; i < 10000; i++) {
             double value = pr.get();
             assertTrue(-10 <= value && value <= 20);

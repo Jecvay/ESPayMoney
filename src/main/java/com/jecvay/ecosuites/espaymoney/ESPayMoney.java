@@ -27,7 +27,7 @@ import java.util.Locale;
 @Plugin(
         id = "espaymoney",
         name = "ESPayMoney",
-        description = "Sponge plugin, pay money when some event emitted.",
+        description = "Earn or Spend by mining or kill entity!",
         authors = {
                 "Jecvay"
         }
