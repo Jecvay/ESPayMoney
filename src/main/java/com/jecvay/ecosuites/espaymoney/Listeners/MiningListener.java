@@ -10,6 +10,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.service.economy.transaction.ResultType;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class MiningListener {
 
     private boolean doEcoMining(Player player, String blockId) {
         double price = esp.getMainConfig().getPayBlock(blockId);
-        logger.debug("{} break block: {}", player.getName(), blockId);
+//        logger.debug("{} break block: {} [{}]", player.getName(), blockId, price);
 //        player.sendMessage(Text.of(
 //                TextColors.BLUE, player.getName(),
 //                TextColors.GRAY, " break block: ",
@@ -72,7 +73,7 @@ public class MiningListener {
     @Listener(order = Order.EARLY, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event, @Root Player player) {
         if (player.gameMode().get() == GameModes.CREATIVE) {
-            return;
+            // return;
         }
         event.getTransactions().forEach(trans->{
             if (!trans.isValid()) {

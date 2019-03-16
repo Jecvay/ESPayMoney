@@ -61,7 +61,7 @@ public class EntityListener {
             Entity entity = event.getTargetEntity();
             String entityId = entity.getType().getId();
 
-            logger.debug("{} killed entity: {}, Creator: {}", player.getName(), entity.getType().getId(), entity.getCreator());
+            // logger.debug("{} killed entity: {}, Creator: {}", player.getName(), entity.getType().getId(), entity.getCreator());
             if (player.gameMode().get() == GameModes.CREATIVE) {
                 // return;
             }

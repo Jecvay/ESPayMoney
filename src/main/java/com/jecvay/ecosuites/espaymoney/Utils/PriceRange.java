@@ -9,7 +9,7 @@ public class PriceRange {
 
     public PriceRange(String rangeString) {
         rangeString = rangeString.replace("\\s+", "");
-        String[] valueList = rangeString.split(":");
+        String[] valueList = rangeString.split("~");
         if (valueList.length == 1) {
             minValue = maxValue = Double.valueOf(valueList[0]);
         } else if (valueList.length == 2) {
