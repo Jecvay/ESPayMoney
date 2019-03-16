@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.1.0'
     testCompile 'junit:junit:4.12'
 }
 
