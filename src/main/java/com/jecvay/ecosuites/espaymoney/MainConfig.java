@@ -1,6 +1,7 @@
 package com.jecvay.ecosuites.espaymoney;
 
 import com.jecvay.ecosuites.espaymoney.Utils.PriceRange;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -27,6 +28,8 @@ public class MainConfig {
 
     private Map<String, PriceRange> configCache;
     private Map<String, PriceRange> priceCache;
+    private Map<String, PriceRange> fuzzyBlockCache;
+    private Map<String, PriceRange> fuzzyEntityCache;
 
     MainConfig(ESPayMoney esp, Path configDir) {
         Path path = configDir.resolve(mainConfName);
@@ -53,9 +56,23 @@ public class MainConfig {
             killNode = this.node.getNode("pay_killing");
             configCache = new HashMap<>();
             priceCache = new HashMap<>();
+            fuzzyBlockCache = new HashMap<>();
+            fuzzyEntityCache = new HashMap<>();
+            initFuzzyCache();
         } catch (IOException e) {
             e.printStackTrace();
             logger.warn("reload failed: {}", mainConfName);
+        }
+    }
+
+    private void initFuzzyCache() {
+        ConfigurationNode root = miningNode.getNode("blocks");
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : root.getChildrenMap().entrySet()) {
+            String key = (String) entry.getKey();
+            if (key == null || key.length() == 0 || !key.startsWith("@")) continue;
+            ConfigurationNode node = entry.getValue();
+            PriceRange priceRange = new PriceRange(node.getString());
+            fuzzyBlockCache.put(key, priceRange);
         }
     }
 
@@ -92,23 +109,37 @@ public class MainConfig {
     }
 
     public double getPayBlock(final String blockId) {
+        if (priceCache.containsKey(blockId)) {
+            return priceCache.get(blockId).get();
+        }
         CommentedConfigurationNode priceNode = miningNode.getNode("blocks", blockId);
-        String blockCommonId = blockId;
+
+        // search fully match
+        if (priceNode.getValue() != null) {
+            PriceRange priceRange = new PriceRange(priceNode.getString());
+            priceCache.put(blockId, priceRange);
+            return priceRange.get();
+        }
 
         // search first matched traits
-        if (priceNode.getValue() == null) {
-            blockCommonId = blockId.split("\\[", 2)[0];
-            priceNode = miningNode.getNode("blocks", blockCommonId);
-        }
-        if (priceNode.getValue() == null) {
-            return getPayOtherBlock();
+        String blockCommonId = blockId.split("\\[", 2)[0];
+        priceNode = miningNode.getNode("blocks", blockCommonId);
+        if (priceNode.getValue() != null) {
+            PriceRange priceRange = new PriceRange(priceNode.getString());
+            priceCache.put(blockId, priceRange);
+            return priceRange.get();
         }
 
-        // get from cache
-        if (!priceCache.containsKey(blockCommonId)) {
-            priceCache.put(blockCommonId, new PriceRange(priceNode.getString()));
+        // fuzzy match
+        for (Map.Entry<String, PriceRange> entry : fuzzyBlockCache.entrySet()) {
+            if (blockId.contains(entry.getKey().split("@")[1])) {
+               PriceRange priceRange = entry.getValue();
+               priceCache.put(blockId, priceRange);
+               return priceRange.get();
+            }
         }
-        return priceCache.get(blockCommonId).get();
+
+        return getPayOtherBlock();
     }
 
     public double getPayOtherEntity() {
@@ -120,21 +151,37 @@ public class MainConfig {
     }
 
     public double getPayEntity(final String entityId) {
-        CommentedConfigurationNode priceNode = killNode.getNode("entities", entityId);
-        String entityCommonId = entityId;
-        if (priceNode.getValue() == null) {
-            entityCommonId = entityId.split("\\[", 2)[0];
-            priceNode = killNode.getNode("entities", entityCommonId);
+        if (priceCache.containsKey(entityId)) {
+            return priceCache.get(entityId).get();
         }
-        if (priceNode.getValue() == null) {
-            return getPayOtherEntity();
+        CommentedConfigurationNode priceNode = miningNode.getNode("entities", entityId);
+
+        // search fully match
+        if (priceNode.getValue() != null) {
+            PriceRange priceRange = new PriceRange(priceNode.getString());
+            priceCache.put(entityId, priceRange);
+            return priceRange.get();
         }
 
-        // get from cache
-        if (!priceCache.containsKey(entityCommonId)) {
-            priceCache.put(entityCommonId, new PriceRange(priceNode.getString()));
+        // search first matched traits
+        String blockCommonId = entityId.split("\\[", 2)[0];
+        priceNode = miningNode.getNode("entities", blockCommonId);
+        if (priceNode.getValue() != null) {
+            PriceRange priceRange = new PriceRange(priceNode.getString());
+            priceCache.put(entityId, priceRange);
+            return priceRange.get();
         }
-        return priceCache.get(entityCommonId).get();
+
+        // fuzzy match
+        for (Map.Entry<String, PriceRange> entry : fuzzyBlockCache.entrySet()) {
+            if (entityId.contains(entry.getKey().split("@")[1])) {
+                PriceRange priceRange = entry.getValue();
+                priceCache.put(entityId, priceRange);
+                return priceRange.get();
+            }
+        }
+
+        return getPayOtherEntity();
     }
 
 }

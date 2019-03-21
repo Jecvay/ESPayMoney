@@ -73,7 +73,7 @@ public class MiningListener {
     @Listener(order = Order.EARLY, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event, @Root Player player) {
         if (player.gameMode().get() == GameModes.CREATIVE) {
-            // return;
+            return;
         }
         event.getTransactions().forEach(trans->{
             if (!trans.isValid()) {
