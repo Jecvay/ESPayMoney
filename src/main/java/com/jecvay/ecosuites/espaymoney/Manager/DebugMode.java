@@ -1,10 +1,13 @@
 package com.jecvay.ecosuites.espaymoney.Manager;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DebugMode {
@@ -17,7 +20,7 @@ public class DebugMode {
 
     private PlayerDebugInfo touchPlayerInfo(UUID uuid) {
         if (!playerDebugInfoMap.containsKey(uuid)) {
-            PlayerDebugInfo playerDebugInfo = new PlayerDebugInfo();
+            PlayerDebugInfo playerDebugInfo = new PlayerDebugInfo(uuid);
             playerDebugInfoMap.put(uuid, playerDebugInfo);
             return playerDebugInfo;
         } else {
@@ -49,6 +52,16 @@ public class DebugMode {
 class PlayerDebugInfo {
     private Boolean debugTag = false;
     private Boolean editTag = false;
+    private UUID uuid = null;
+
+    PlayerDebugInfo(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    private Player getPlayer() {
+        Optional<Player> playerOptional = Sponge.getServer().getPlayer(uuid);
+        return playerOptional.orElse(null);
+    }
 
     boolean isDebug() {
         return debugTag;
@@ -56,6 +69,14 @@ class PlayerDebugInfo {
 
     void setDebug(boolean tag) {
         debugTag = tag;
+        Player player = getPlayer();
+        if (player != null) {
+            if (tag) {
+                player.offer(Keys.GAME_MODE, GameModes.CREATIVE);
+            } else {
+                player.offer(Keys.GAME_MODE, GameModes.SURVIVAL);
+            }
+        }
     }
 
     boolean isEdit() {

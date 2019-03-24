@@ -12,6 +12,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +73,8 @@ public class MiningListener {
 
     @Listener(order = Order.EARLY, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event, @Root Player player) {
-        if (player.gameMode().get() == GameModes.CREATIVE) {
+        boolean isDebug = esp.getDebugMode().isDebug(player.getUniqueId());
+        if (!isDebug && player.gameMode().get() == GameModes.CREATIVE) {
             return;
         }
         event.getTransactions().forEach(trans->{
@@ -82,9 +84,19 @@ public class MiningListener {
             String blockId = trans.getOriginal().getState().getId();
             Optional<UUID> creator = trans.getOriginal().getCreator();
             boolean isNatureOre = !creator.isPresent();
-            if (isNatureOre)  {
+            if (!isDebug && isNatureOre)  {
                 // Query mining cost and pay to player
-                event.setCancelled(!doEcoMining(player, blockId));
+                boolean ecoSuccess = doEcoMining(player, blockId);
+                event.setCancelled(!ecoSuccess);
+            }
+            if (isDebug) {
+                event.setCancelled(true);
+                double price = esp.getMainConfig().getPayBlock(blockId);
+                player.sendMessage(Text.of(
+                    TextColors.GRAY, "ID: ",
+                    TextColors.GREEN, blockId,
+                    TextColors.WHITE, "  price=[", price, "]"
+                ));
             }
         });
     }

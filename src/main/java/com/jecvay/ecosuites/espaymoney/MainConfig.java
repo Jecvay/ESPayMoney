@@ -142,6 +142,15 @@ public class MainConfig {
         return getPayOtherBlock();
     }
 
+    public void addPayBlock(final String blockId) {
+        miningNode.getNode("blocks", blockId).setValue("0");
+        try {
+            this.configLoader.save(this.node);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public double getPayOtherEntity() {
         if (!configCache.containsKey("other_entity")) {
             String value = killNode.getNode("other_entity").getString();
