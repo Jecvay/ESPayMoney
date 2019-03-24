@@ -69,6 +69,10 @@ class PlayerDebugInfo {
 
     void setDebug(boolean tag) {
         debugTag = tag;
+        if (tag) {
+            setEdit(false);
+        }
+
         Player player = getPlayer();
         if (player != null) {
             if (tag) {
@@ -85,6 +89,9 @@ class PlayerDebugInfo {
 
     void setEdit(boolean tag) {
         editTag = tag;
+        if (tag) {
+            setDebug(false);
+        }
     }
 
 }

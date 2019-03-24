@@ -6,6 +6,9 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -142,12 +145,22 @@ public class MainConfig {
         return getPayOtherBlock();
     }
 
-    public void addPayBlock(final String blockId) {
-        miningNode.getNode("blocks", blockId).setValue("0");
-        try {
-            this.configLoader.save(this.node);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void addPayBlock(final String blockId, Player player) {
+        String preValue = miningNode.getNode("blocks", blockId).getString();
+        if (preValue == null || preValue.length() == 0) {
+            miningNode.getNode("blocks", blockId).setValue("-1~1");
+            try {
+                this.configLoader.save(this.node);
+                player.sendMessage(Text.of(
+                        TextColors.GRAY, "ID: ",
+                        TextColors.GREEN, blockId,
+                        TextColors.WHITE, "Added to config"
+                ));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            player.sendMessage(I18N.getText("cmd.edit.already_have"));
         }
     }
 

@@ -44,13 +44,6 @@ public class MiningListener {
 
     private boolean doEcoMining(Player player, String blockId) {
         double price = esp.getMainConfig().getPayBlock(blockId);
-//        logger.debug("{} break block: {} [{}]", player.getName(), blockId, price);
-//        player.sendMessage(Text.of(
-//                TextColors.BLUE, player.getName(),
-//                TextColors.GRAY, " break block: ",
-//                TextColors.GREEN, blockId,
-//                TextColors.WHITE, "[", price, "]"
-//        ));
 
         ResultType resultType = esp.getEconomyManager().easyAddMoney(player, price);
         if (resultType == ResultType.SUCCESS) {
@@ -73,7 +66,9 @@ public class MiningListener {
 
     @Listener(order = Order.EARLY, beforeModifications = true)
     public void onBreakBlock(ChangeBlockEvent.Break event, @Root Player player) {
-        boolean isDebug = esp.getDebugMode().isDebug(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        boolean isDebug = esp.getDebugMode().isDebug(uuid);
+        boolean isEdit = esp.getDebugMode().isEdit(uuid);
         if (!isDebug && player.gameMode().get() == GameModes.CREATIVE) {
             return;
         }
@@ -97,6 +92,10 @@ public class MiningListener {
                     TextColors.GREEN, blockId,
                     TextColors.WHITE, "  price=[", price, "]"
                 ));
+            }
+            if (isEdit) {
+                event.setCancelled(true);
+                esp.getMainConfig().addPayBlock(blockId, player);
             }
         });
     }
