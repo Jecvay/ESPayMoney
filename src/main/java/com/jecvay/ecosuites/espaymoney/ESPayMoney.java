@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.jecvay.ecosuites.espaymoney.Listeners.EconomyListener;
 import com.jecvay.ecosuites.espaymoney.Listeners.EntityListener;
 import com.jecvay.ecosuites.espaymoney.Listeners.MiningListener;
+import com.jecvay.ecosuites.espaymoney.Manager.DebugMode;
 import com.jecvay.ecosuites.espaymoney.Manager.ESPCommandManager;
 import com.jecvay.ecosuites.espaymoney.Manager.EconomyManager;
 import org.apache.commons.lang3.LocaleUtils;
@@ -52,6 +53,7 @@ public class ESPayMoney {
 
     private MainConfig mainConfig;
     private EconomyManager economyManager;
+    private DebugMode debugMode;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -86,6 +88,9 @@ public class ESPayMoney {
         // init economyManager
         economyManager = new EconomyManager(this);
         game.getEventManager().registerListeners(this, new EconomyListener(this, economyManager));
+
+        // init debug mode
+        debugMode = new DebugMode();
 
         // init miningListener
         if (mainConfig.getNode("modules", "pay_mining").getBoolean()) {
@@ -140,7 +145,6 @@ public class ESPayMoney {
     public void reloadPlugin() {
         logger.info(I18N.getString("plugin.reload"));
         mainConfig.reload();
-        // game.getEventManager().unregisterListeners(this);
         game.getEventManager().unregisterPluginListeners(this);
         registerCustomListeners();
     }
@@ -170,5 +174,9 @@ public class ESPayMoney {
 
     public Path getConfigDir() {
         return configDir;
+    }
+
+    public DebugMode getDebugMode() {
+        return debugMode;
     }
 }
