@@ -3,7 +3,7 @@
 #### *Earn or Spend by mining or kill entity!*
 
 ### Why you need
-As X-ray mod become more and more stronger, we should anti-xray from the rate of getting ore. If mine a stone will earn $1 in game, then mine a iron-ore should cost $50 ~ $100. and player can decide selling this iron-ore or keep them. this is a good way to anti-xray. even you allow players to use xray mod, they will not get benefit from it.
+As X-ray mod become more and more stronger, we should anti-xray by limit the rate of getting ore. If mine a stone will earn $1 in game, then mine a iron-ore should cost $50 ~ $100. and player can decide selling this iron-ore or keep them. this is a good way to anti-xray. even you allow players to use xray mod, they will not get benefit from it.
 
 And if you create a Boss Mob which give player lots of precious items at harvest time, then cost money to kill this mob is a good way to make the server's economy more balance.
 
@@ -17,7 +17,9 @@ And if you create a Boss Mob which give player lots of precious items at harvest
 * You can custom the content of tips in `config/espaymoney/lang` folder
 
 ### Commands
-- `/esp reload` reload configuration and RE register listeners. (permission=`espaymoney.reload`)
+- `/esp reload` reload configuration and RE register listeners. (permission=`espaymoney.admin.reload`)
+- `/esp debug` enable/disable your debug mode. In this mode plugin will print the info of block when you break one. (permission=`espaymoney.admin.debug`)
+- `/esp fast` enable/disable your FastEdit mode. In this mode plugin will auto add block's info into your config file with a default value of "-1~1" when you break one. (permission=`espaymoney.admin.edit`)
 
 
 ### Permissions
@@ -55,6 +57,13 @@ pay_mining {
         "minecraft:wool" = -1,
         "minecraft:stone" = 1,
         "minecraft:stone[variant=granite]" = 2,
+        
+        # fuzzy match
+        "@blue"=233
+        "@yellow"=-233
+
+        # auto added by fastedit mode
+        "minecraft:wool[color=white]"="-1~1"
     }
 }
 
