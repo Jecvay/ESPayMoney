@@ -28,9 +28,11 @@ public class I18N {
     private static String assetsName = "i18n";
 
     private ResourceBundle rb;
+    private ResourceBundle assetRb;
 
     private I18N(Locale locale) {
         this.rb = getCustomBundle(assetsName, locale);
+        this.assetRb = ResourceBundle.getBundle("assets.espaymoney." + assetsName, locale);
     }
 
     static public I18N getInstance() {
@@ -94,6 +96,9 @@ public class I18N {
     public static String getString(String key, Object... args) {
         if (getInstance().rb.containsKey(key)) {
             String value = getInstance().rb.getString(key);
+            return MessageFormat.format(value, args);
+        } else if (getInstance().assetRb.containsKey(key)) {
+            String value = getInstance().assetRb.getString(key);
             return MessageFormat.format(value, args);
         } else {
             return key;
