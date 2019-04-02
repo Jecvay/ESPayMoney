@@ -28,6 +28,10 @@ public class EconomyManager {
         reloadEconomyProvider();
     }
 
+    private BigDecimal getBigDecimal(double value) {
+        return BigDecimal.valueOf((long)(value * 100), 2);
+    }
+
     public void setEconomyService(EconomyService economyService) {
         this.economyService = economyService;
         defaultCurrency = economyService.getDefaultCurrency();
@@ -55,7 +59,7 @@ public class EconomyManager {
         Optional<UniqueAccount> uOpt = economyService.getOrCreateAccount(player.getUniqueId());
         if (uOpt.isPresent()) {
             TransactionResult result = uOpt.get().withdraw(
-                    defaultCurrency, BigDecimal.valueOf(money),
+                    defaultCurrency, getBigDecimal(money),
                 Cause.of(evenContext, esp.getContainer())
             );
             return result.getResult();
@@ -67,7 +71,7 @@ public class EconomyManager {
         Optional<UniqueAccount> uOpt = economyService.getOrCreateAccount(player.getUniqueId());
         if (uOpt.isPresent()) {
             TransactionResult result = uOpt.get().deposit(
-                    defaultCurrency, BigDecimal.valueOf(money),
+                    defaultCurrency, getBigDecimal(money),
                     Cause.of(evenContext, esp.getContainer())
             );
             return result.getResult();

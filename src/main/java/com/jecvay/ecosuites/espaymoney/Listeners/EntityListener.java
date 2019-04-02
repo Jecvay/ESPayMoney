@@ -69,6 +69,10 @@ public class EntityListener {
                 // isn't nature
                 return;
             }
+            if (entity instanceof Player && entity.equals(player)) {
+                // suicide
+                return;
+            }
             event.setCancelled(!doEcoKilling(player, entityId));
 
         });
