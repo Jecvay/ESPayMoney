@@ -14,10 +14,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class MiningListener {
 
@@ -42,26 +39,30 @@ public class MiningListener {
         }
     }
 
-    private boolean doEcoMining(Player player, String blockId) {
-        double price = esp.getMainConfig().getPayBlock(blockId);
-
-        ResultType resultType = esp.getEconomyManager().easyAddMoney(player, price);
+    private boolean doEcoMining(Player player, List<String> blockList) {
+        double totalEarn = 0;
+        for (String blockId : blockList) {
+            double price = esp.getMainConfig().getPayBlock(blockId);
+            totalEarn += price;
+        }
+        ResultType resultType = esp.getEconomyManager().easyAddMoney(player, totalEarn);
         if (resultType == ResultType.SUCCESS) {
-            if (price >= 0) {
+            if (totalEarn >= 0) {
                 // player.sendMessage(I18N.getText("debug.mining.eco.add", Double.toString(price));
-                doWhenEarning(player, price);
+                doWhenEarning(player, totalEarn);
             } else {
                 // player.sendMessageI18N.getText("debug.mining.eco.sub", Double.toString(-price));
             }
             return true;
         } else if (resultType == ResultType.ACCOUNT_NO_FUNDS) {
-            player.sendMessage(ChatTypes.ACTION_BAR, I18N.getText("mining.no_funds", -price));
+            player.sendMessage(ChatTypes.ACTION_BAR, I18N.getText("mining.no_funds", -totalEarn));
             return false;
         } else if (resultType == ResultType.ACCOUNT_NO_SPACE) {
             return true;
         } else {
             return false;
         }
+
     }
 
     @Listener(order = Order.EARLY, beforeModifications = true)
@@ -69,6 +70,7 @@ public class MiningListener {
         UUID uuid = player.getUniqueId();
         boolean isDebug = esp.getDebugMode().isDebug(uuid);
         boolean isEdit = esp.getDebugMode().isEdit(uuid);
+        List<String> blockList = new ArrayList<>();
         if (!isDebug && player.gameMode().get() == GameModes.CREATIVE) {
             return;
         }
@@ -79,11 +81,11 @@ public class MiningListener {
             String blockId = trans.getOriginal().getState().getId();
             Optional<UUID> creator = trans.getOriginal().getCreator();
             boolean isNatureOre = !creator.isPresent();
+
             if (!isDebug && isNatureOre)  {
-                // Query mining cost and pay to player
-                boolean ecoSuccess = doEcoMining(player, blockId);
-                event.setCancelled(!ecoSuccess);
+                blockList.add(blockId);
             }
+
             if (isDebug) {
                 event.setCancelled(true);
                 double price = esp.getMainConfig().getPayBlock(blockId);
@@ -98,5 +100,14 @@ public class MiningListener {
                 esp.getMainConfig().addPayBlock(blockId, player);
             }
         });
+
+        if (blockList.size() > 0) {
+            // Query mining cost and pay to player
+            boolean ecoSuccess = doEcoMining(player, blockList);
+
+            if (!ecoSuccess) {
+                event.setCancelled(true);
+            }
+        }
     }
 }

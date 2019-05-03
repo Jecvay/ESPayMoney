@@ -1,6 +1,8 @@
 # mc
 build/
 .gradle/
+.project
+.settings/
 
 # Compiled class file
 *.class
