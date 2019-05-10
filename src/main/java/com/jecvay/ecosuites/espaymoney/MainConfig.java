@@ -34,6 +34,10 @@ public class MainConfig {
     private Map<String, PriceRange> fuzzyBlockCache;
     private Map<String, PriceRange> fuzzyEntityCache;
 
+    // Permission Group Name --> Factor
+    private Map<String, Float> discountMap;
+    private Map<String, Float> gainMap;
+
     MainConfig(ESPayMoney esp, Path configDir) {
         Path path = configDir.resolve(mainConfName);
         this.esp = esp;
@@ -59,9 +63,14 @@ public class MainConfig {
             killNode = this.node.getNode("pay_killing");
             configCache = new HashMap<>();
             priceCache = new HashMap<>();
+
             fuzzyBlockCache = new HashMap<>();
             fuzzyEntityCache = new HashMap<>();
             initFuzzyCache();
+
+            discountMap = new HashMap<>();
+            gainMap = new HashMap<>();
+            initVipMap();
         } catch (IOException e) {
             e.printStackTrace();
             logger.warn("reload failed: {}", mainConfName);
@@ -76,6 +85,25 @@ public class MainConfig {
             ConfigurationNode node = entry.getValue();
             PriceRange priceRange = new PriceRange(node.getString());
             fuzzyBlockCache.put(key, priceRange);
+        }
+    }
+
+    private void initVipMap() {
+        ConfigurationNode discountNode = miningNode.getNode("discount");
+        ConfigurationNode gainNode = miningNode.getNode("gain");
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : discountNode.getChildrenMap().entrySet()) {
+            String key = (String) entry.getKey();
+            if (key == null || key.length() == 0) continue;
+            ConfigurationNode node = entry.getValue();
+            float factor = node.getFloat();
+            discountMap.put(key, factor);
+        }
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : gainNode.getChildrenMap().entrySet()) {
+            String key = (String) entry.getKey();
+            if (key == null || key.length() == 0) continue;
+            ConfigurationNode node = entry.getValue();
+            float factor = node.getFloat();
+            gainMap.put(key, factor);
         }
     }
 
@@ -204,6 +232,20 @@ public class MainConfig {
         }
 
         return getPayOtherEntity();
+    }
+
+    public float getGainFactor(String permGroupName) {
+        if (gainMap.containsKey(permGroupName)) {
+            return gainMap.get(permGroupName);
+        }
+        return -1;
+    }
+
+    public float getDiscountFactor(String permGroupName) {
+        if (discountMap.containsKey(permGroupName)) {
+            return discountMap.get(permGroupName);
+        }
+        return -1;
     }
 
 }

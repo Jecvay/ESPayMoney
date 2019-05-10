@@ -10,6 +10,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.service.economy.transaction.ResultType;
+import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
@@ -39,11 +40,39 @@ public class MiningListener {
         }
     }
 
+    private double getVipPrice(Player player, double price) {
+        List<SubjectReference> parents = player.getParents();
+        for (SubjectReference subject : parents) {
+            String permGroupName = subject.getSubjectIdentifier();
+            permGroupName = "vip_1";
+            if (price > 0) {
+                float factor = esp.getMainConfig().getGainFactor(permGroupName);
+                if (factor > 0) {
+                    price *= factor;
+                    break;
+                }
+            } else {
+                float factor = esp.getMainConfig().getDiscountFactor(permGroupName);
+                if (factor > 0) {
+                    price *= factor;
+                    break;
+                }
+            }
+        }
+        return price;
+    }
+
     private boolean doEcoMining(Player player, List<String> blockList) {
         double totalEarn = 0;
         for (String blockId : blockList) {
             double price = esp.getMainConfig().getPayBlock(blockId);
-            totalEarn += price;
+            double vipPrice = getVipPrice(player, price);
+            totalEarn += vipPrice;
+            /*
+            if (vipPrice != price) {
+                player.sendMessage(Text.of("origin:", price, "  vip:", vipPrice));
+            }
+             */
         }
         ResultType resultType = esp.getEconomyManager().easyAddMoney(player, totalEarn);
         if (resultType == ResultType.SUCCESS) {
